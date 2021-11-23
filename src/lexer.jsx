@@ -10,9 +10,9 @@ export default class extends React.Component {
   render() {
     const rows = [];
     let row = 0;
-    console.log(this.props.tokens);
+
     for (const token of this.props.tokens) {
-      while (token.loc.row != row) {
+      while (token.start.row != row) {
         rows.push([]);
         row += 1;
       }
@@ -23,9 +23,10 @@ export default class extends React.Component {
       <div className="lexer-row">
         {rows.map((tokens, rowNo) =>
           <div key={rowNo}>
+            <div className="lexer-line-no">{rowNo + 1}</div>
             <div className="lexer-token">
               {tokens.map((token, tokenNo) => {
-                const marginLeft = tokenNo == 0 ? token.loc.col * 10 : 0;
+                const marginLeft = tokenNo == 0 ? token.start.col * 10 : 0;
                 return (
                   <div style={{ marginLeft }} key={tokenNo}>
                     {`${token}`}

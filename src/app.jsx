@@ -10,25 +10,26 @@ import Bytecode from './bytecode'
 import Console from './console'
 
 import LangLexer from './lang/lexer';
+import LangParser from './lang/parser';
 
 const INITIAL_SOURCE=`
-func print_int(a: int): int = "print_int"
-func read_int(): int = "read_int"
+func print_int(a: int): int = "print_int";
+func read_int(): int = "read_int";
 
 func exp(a: int, n: int): int {
   if (n == 0) {
-    return 1
+    return 1;
   } else {
     let b : int = exp(a, n / 2);
     if (n % 2 == 0) {
-      return b * b
+      return b * b;
     } else {
-      return b * b * a
+      return b * b * a;
     }
   }
 }
 
-print_int(exp(read_int(), read_int()))
+print_int(exp(read_int(), read_int()));
 `;
 
 
@@ -38,7 +39,8 @@ export default class extends React.Component {
     super(props);
     this.state = {
       source: '',
-      tokens: []
+      tokens: [],
+      ast: null
     };
   }
 
@@ -47,10 +49,9 @@ export default class extends React.Component {
   }
 
   onSourceChange(source) {
-    this.setState({
-      source: source,
-      tokens: new LangLexer(source).tokenize()
-    });
+    const tokens = new LangLexer(source).tokenize();
+    const ast = new LangParser(tokens).parse();
+    this.setState({ source, tokens, ast });
   }
 
   render() {
@@ -75,7 +76,9 @@ export default class extends React.Component {
             <Lexer tokens={this.state.tokens} />
           </div>
           <div className="separator"></div>
-          <div className="panel parser"><Parser /></div>
+          <div className="panel parser">
+            <Parser ast={this.state.ast} />
+          </div>
           <div className="separator"></div>
           <div className="panel bytecode"><Bytecode /></div>
           <div className="separator"></div>

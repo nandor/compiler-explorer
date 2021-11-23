@@ -1,30 +1,19 @@
-import Token, { Kind } from './token'
+import { Location, Range } from './position'
+import Token from './token'
 
-
-class Location {
-  constructor(row, col) {
-    this.row = row;
-    this.col = col;
-  }
-
-  toString() {
-    return `${this.row},${this.col}`
-  }
-}
 
 class LexerError {
   constructor(loc, message) {
-
   }
 }
 
 export default class Lexer {
   constructor(source) {
-    this.source = source;
-    this.index = 0;
-    this.char = '\0';
-    this.row = 1;
-    this.col = 0;
+    this._source = source;
+    this._index = 0;
+    this._char = '\0';
+    this._row = 1;
+    this._col = 0;
     this._nextChar();
   }
 
@@ -44,97 +33,114 @@ export default class Lexer {
     return /[0-9]/.test(chr);
   }
 
+  _loc() {
+    return new Location(this._row, this._col);
+  }
+
   _nextChar() {
-    if (this.index >= this.source.length) {
+    if (this._index >= this._source.length) {
       return null;
     }
-    this.char = this.source[this.index];
-    this.index++;
-    if (this.char == '\n') {
-      this.row++;
-      this.col = 0;
+    this._char = this._source[this._index];
+    this._index++;
+    if (this._char == '\n') {
+      this._row++;
+      this._col = 0;
     } else {
-      this.col++;
+      this._col++;
     }
-    return this.char;
+    return this._char;
   }
 
   _nextToken() {
-    while (!this._eof() && Lexer.isWhitespace(this.char)) {
+    while (!this._eof() && Lexer.isWhitespace(this._char)) {
       this._nextChar();
     }
 
-    const loc = new Location(this.row, this.col);
-    switch (this.char) {
-      case '\0': return new Token(Kind.EOF, loc);
-      case '(': return this._nextChar(), new Token(Kind.LPAREN, loc);
-      case ')': return this._nextChar(), new Token(Kind.RPAREN, loc);
-      case '{': return this._nextChar(), new Token(Kind.LBRACE, loc);
-      case '}': return this._nextChar(), new Token(Kind.RBRACE, loc);
-      case ':': return this._nextChar(), new Token(Kind.COLON, loc);
-      case ';': return this._nextChar(), new Token(Kind.SEMI, loc);
-      case '+': return this._nextChar(), new Token(Kind.PLUS, loc);
-      case '-': return this._nextChar(), new Token(Kind.MINUS, loc);
-      case '*': return this._nextChar(), new Token(Kind.MUL, loc);
-      case '/': return this._nextChar(), new Token(Kind.DIV, loc);
-      case '%': return this._nextChar(), new Token(Kind.MOD, loc);
-      case ',': return this._nextChar(), new Token(Kind.COMMA, loc);
+    const start = this._loc();
+    switch (this._char) {
+      case '\0': return new Token(Token.Kind.EOF, start, start);
+      case '(': return this._nextChar(), new Token(Token.Kind.LPAREN, start, start);
+      case ')': return this._nextChar(), new Token(Token.Kind.RPAREN, start, start);
+      case '{': return this._nextChar(), new Token(Token.Kind.LBRACE, start, start);
+      case '}': return this._nextChar(), new Token(Token.Kind.RBRACE, start, start);
+      case ':': return this._nextChar(), new Token(Token.Kind.COLON, start, start);
+      case ';': return this._nextChar(), new Token(Token.Kind.SEMI, start, start);
+      case '+': return this._nextChar(), new Token(Token.Kind.PLUS, start, start);
+      case '-': return this._nextChar(), new Token(Token.Kind.MINUS, start, start);
+      case '*': return this._nextChar(), new Token(Token.Kind.MUL, start, start);
+      case '/': return this._nextChar(), new Token(Token.Kind.DIV, start, start);
+      case '%': return this._nextChar(), new Token(Token.Kind.MOD, start, start);
+      case ',': return this._nextChar(), new Token(Token.Kind.COMMA, start, start);
       case '=': {
+        const end = this._loc();
         if (this._nextChar() == '=') {
-          return this._nextChar(), new Token(Kind.DOUBLE_EQUAL, loc);
+          const end = this._loc();
+          this._nextChar();
+          return new Token(Token.Kind.DOUBLE_EQUAL, start, end);
         }
-        return new Token(Kind.EQUAL, loc);
+        return new Token(Token.Kind.EQUAL, start, end);
       }
       case '"': {
         var word = '';
         this._nextChar();
-        while (this.char != '\"') {
-          word += this.char;
+        while (this._char != '\"') {
+          word += this._char;
           this._nextChar();
           if (this._eof()) {
-            return this._error(loc, "string not terminated");
+            return this._error(start, "string not terminated");
           }
         }
+        const end = this._loc();
         this._nextChar();
-        return new Token(Kind.STRING, loc, word);
+        return new Token(Token.Kind.STRING, start, end, word);
       }
       default: {
-        if (Lexer.isIdentStart(this.char)) {
+        if (Lexer.isIdentStart(this._char)) {
           var word = '';
+          var end = start;
           do {
-            word += this.char;
+            word += this._char;
+            end = this._loc();
             this._nextChar();
-          } while (!this._eof() && Lexer.isIdentCont(this.char));
-          if (word == "func") return new Token(Kind.FUNC, loc);
-          if (word == "return") return new Token(Kind.RETURN, loc);
-          if (word == "while") return new Token(Kind.WHILE, loc);
-          return new Token(Kind.IDENT, loc, word);
+          } while (!this._eof() && Lexer.isIdentCont(this._char));
+          if (word == "func") return new Token(Token.Kind.FUNC, start, end);
+          if (word == "return") return new Token(Token.Kind.RETURN, start, end);
+          if (word == "while") return new Token(Token.Kind.WHILE, start, end);
+          if (word == "if") return new Token(Token.Kind.IF, start, end);
+          if (word == "else") return new Token(Token.Kind.ELSE, start, end);
+          if (word == "let") return new Token(Token.Kind.LET, start, end);
+          return new Token(Token.Kind.IDENT, start, end, word);
         }
-        if (Lexer.isDigit(this.char)) {
+        if (Lexer.isDigit(this._char)) {
           var number = 0;
+          var end = start;
           do {
-            const digit = this.char.charCodeAt(0) - '0'.charCodeAt(0);
+            const digit = this._char.charCodeAt(0) - '0'.charCodeAt(0);
             if ((Number.MAX_SAFE_INTEGER - digit) / 10 <= number) {
-              return this._error(loc, "integer out of range");
+              return this._error(start, "integer out of range");
             }
             number = number * 10 + digit;
+            end = this._loc();
             this._nextChar();
-          } while (!this._eof() && Lexer.isDigit(this.char));
-          return new Token(Kind.INT, loc, number);
+          } while (!this._eof() && Lexer.isDigit(this._char));
+          return new Token(Token.Kind.INT, start, end, number);
         }
-        return this._error(loc, `unknown character '${this.char}'`);
+        return this._error(start, `unknown character '${this._char}'`);
       }
     }
     return null;
   }
 
   _eof() {
-    return this.index == this.source.length;
+    return this._index == this._source.length;
   }
 
-  _error(loc, message) {
-    this.index = this.source.length;
-    return new Token(Kind.ERROR, loc);
+  _error(start, message) {
+    const end = _loc();
+    this._index = this._source.length;
+    // TODO: report error
+    return new Token(Token.Kind.ERROR, start, end);
   }
 
   tokenize() {

@@ -7,7 +7,7 @@ export default class extends React.Component {
 
   render() {
     return (
-      <div className="parser"> Parser </div>
+      <div className="parser">{JSON.stringify(this.props.ast)} </div>
     );
   }
 };
