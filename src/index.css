@@ -1,0 +1,66 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.app {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.toolbar {
+  background-color: gray;
+  height: 60px;
+}
+
+.panels {
+  width: 100%;
+  height: calc(100% - 60px);
+
+  align-items: stretch;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.panels > div {
+  max-width: 33.333%;
+  border: 0;
+  flex-grow: 0;
+  flex-shrink: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.panels > .panel {
+  flex-basis: 60%;
+}
+
+.panels > .separator {
+  flex-basis: 50px;
+  background-color: gray;
+}
+
+.lexer-row {
+}
+
+.lexer-row > div {
+  margin-bottom: 3px;
+}
+
+.lexer-token {
+  display: flex;
+  overflow: hidden;
+  margin: 0;
+}
+
+.lexer-token > div {
+  border: 1px solid black;
+  padding: 2px;
+  margin-right: 1px;
+}

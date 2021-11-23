@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "webpack --mode development",
-    "start": "webpack serve --mode development"
+    "start": "webpack serve --mode development",
+    "build": "webpack --mode production"
   },
   "keywords": [],
   "author": "Nandor Licker",
@@ -20,12 +21,14 @@
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-react": "^7.16.0",
     "@babel/runtime": "^7.16.3",
+    "ace-builds": "^1.4.13",
     "babel-loader": "^8.2.3",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
     "css-loader": "^6.5.1",
     "html-webpack-plugin": "^5.5.0",
     "mini-css-extract-plugin": "^2.4.5",
     "react": "^17.0.2",
+    "react-ace": "^9.5.0",
     "react-dom": "^17.0.2",
     "style-loader": "^3.3.1",
     "webpack": "^5.64.0",
