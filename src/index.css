@@ -29,12 +29,11 @@ body {
 }
 
 .panels > div {
-  max-width: 33.333%;
+  max-width: 45%;
   border: 0;
   flex-grow: 0;
   flex-shrink: 0;
   height: 100%;
-  overflow: hidden;
 }
 
 .panels > .panel {
@@ -44,6 +43,10 @@ body {
 .panels > .separator {
   flex-basis: 50px;
   background-color: gray;
+}
+
+.panel {
+  overflow: hidden;
 }
 
 .lexer-row {
@@ -72,4 +75,8 @@ body {
   border: 1px solid black;
   margin-right: 1px;
   margin-bottom: 2px;
+}
+
+.parser {
+  overflow: scroll;
 }

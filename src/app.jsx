@@ -49,9 +49,19 @@ export default class extends React.Component {
   }
 
   onSourceChange(source) {
-    const tokens = new LangLexer(source).tokenize();
-    const ast = new LangParser(tokens).parse();
-    this.setState({ source, tokens, ast });
+    try {
+      const tokens = new LangLexer(source).tokenize();
+      try {
+        const ast = new LangParser(tokens).parse();
+        this.setState({ source, tokens, ast });
+      } catch (e) {
+        console.error(e);
+        this.setState({ source, tokens, ast: null});
+      }
+    } catch (e) {
+      console.error(e);
+      this.setState({ source, tokens: [], ast: null });
+    }
   }
 
   render() {
@@ -67,6 +77,7 @@ export default class extends React.Component {
                 width="100%"
                 height="100%"
                 defaultValue={INITIAL_SOURCE}
+                value={this.state.source}
                 onChange={this.onSourceChange.bind(this)}
                 editorProps={{ $blockScrolling: true }}
             />

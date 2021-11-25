@@ -41,9 +41,9 @@ export class InitStmt extends TopLevelStmt {
 }
 
 export class Module extends Node {
-  constructor(toplevel) {
+  constructor(items) {
     super();
-    this.toplevel = toplevel;
+    this.items = items;
   }
 }
 

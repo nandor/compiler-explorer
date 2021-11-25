@@ -38,16 +38,17 @@ export default class Lexer {
   }
 
   _nextChar() {
-    if (this._index >= this._source.length) {
-      return null;
-    }
-    this._char = this._source[this._index];
-    this._index++;
-    if (this._char == '\n') {
-      this._row++;
-      this._col = 0;
+    if (this._index < this._source.length) {
+      this._char = this._source[this._index];
+      this._index++;
+      if (this._char == '\n') {
+        this._row++;
+        this._col = 0;
+      } else {
+        this._col++;
+      }
     } else {
-      this._col++;
+      this._index = this._source.length + 1;
     }
     return this._char;
   }
@@ -56,10 +57,11 @@ export default class Lexer {
     while (!this._eof() && Lexer.isWhitespace(this._char)) {
       this._nextChar();
     }
-
+    if (this._eof()) {
+      return null;
+    }
     const start = this._loc();
     switch (this._char) {
-      case '\0': return new Token(Token.Kind.EOF, start, start);
       case '(': return this._nextChar(), new Token(Token.Kind.LPAREN, start, start);
       case ')': return this._nextChar(), new Token(Token.Kind.RPAREN, start, start);
       case '{': return this._nextChar(), new Token(Token.Kind.LBRACE, start, start);
@@ -133,20 +135,21 @@ export default class Lexer {
   }
 
   _eof() {
-    return this._index == this._source.length;
+    return this._index == this._source.length + 1;
   }
 
   _error(start, message) {
-    const end = _loc();
+    const end = this._loc();
     this._index = this._source.length;
-    // TODO: report error
-    return new Token(Token.Kind.ERROR, start, end);
+    console.error(message);
+    return null;
   }
 
   tokenize() {
     const tokens = [];
-    while (!this._eof()) {
-      tokens.push(this._nextToken());
+    var token;
+    while (token = this._nextToken()) {
+      tokens.push(token);
     }
     return tokens;
   }
