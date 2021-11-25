@@ -72,9 +72,39 @@ body {
 }
 
 .lexer-token > div {
-  border: 1px solid black;
-  margin-right: 1px;
+  margin-right: 3px;
   margin-bottom: 2px;
+  font-family: monospace;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.lexer-token > div:hover {
+  background-color: gray;
+}
+
+.lexer-token-keyword {
+  color: blue;
+  font-weight: bold;
+}
+
+.lexer-token-separator {
+  font-weight: bold;
+  color: gray;
+  border: none;
+}
+
+.lexer-token-op {
+  color: #ee8c00;
+  font-weight: bold;
+}
+
+.lexer-token-const {
+  border: 1px solid black;
+}
+
+.lexer-token-ident {
+  border: 1px solid black;
 }
 
 .parser {

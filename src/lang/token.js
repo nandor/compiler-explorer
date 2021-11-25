@@ -26,8 +26,6 @@ export default class Token {
         INT: Symbol("INT"),
         STRING: Symbol("STRING"),
         IDENT: Symbol("IDENT"),
-        END: Symbol("END"),
-        ERROR: Symbol("ERROR"),
     });
 
     constructor(kind, start, end, value) {
@@ -65,8 +63,6 @@ export default class Token {
             case Token.Kind.INT: return `INT(${this.value})`;
             case Token.Kind.STRING: return `STRING(${this.value})`;
             case Token.Kind.IDENT: return `IDENT(${this.value})`;
-            case Token.Kind.END: return 'END';
-            case Token.Kind.ERROR: return 'ERROR';
         }
     }
 };
