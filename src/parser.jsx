@@ -191,8 +191,8 @@ export default class extends React.Component {
       return {
         child:
           <g>
-            <rect height={NODE_HEIGHT} stroke='black' fill='white' width='55'/>
-            <text fontSize='16' y='16'>IfStmt</text>
+            <rect height={NODE_HEIGHT} stroke='black' fill='white' width='60'/>
+            <text fontSize='16' y='16' fontFamily='monospace'>IfStmt</text>
             <g transform={`translate(${NODE_OFFSET} ${offsetCond})`}>
               {childCond}
               {this._renderArrow()}
